@@ -30,6 +30,25 @@ void mysys(char *com){
 		write(1, wordv[1], strlen(wordv[1]));
 		error = 0;
 	}
+	else if(wordv[2] && (strcmp(wordv[2], "|") == 0)){
+		int pid;
+		int fd[2];
+
+		pipe(fd);
+		pid = fork();
+		if(pid == 0){
+			dup2(fd[1], 1);
+			close(fd[0]);
+			close(fd[1]);
+			execlp(wordv[0], wordv[0], wordv[1], NULL);	// improvement needed
+			exit(0);
+		}
+		dup2(fd[0], 0);
+		close(fd[0]);
+		close(fd[1]);
+		execlp(wordv[3], wordv[3], wordv[4], NULL);		// improvement needed
+		return;
+	}
 	else{
 		error = execvp(wordv[0], wordv);
 	}
